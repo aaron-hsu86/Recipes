@@ -103,11 +103,11 @@ class Users:
         if any(char.isdigit() for char in data['first_name']):
             flash('First name cannot contain numbers', 'registration')
             is_valid = False
-        if any(char.isdigit() for char in data['last_name']):
-            flash('Last name cannot contain numbers', 'registration')
-            is_valid = False
         if len(data['last_name']) < 3:
             flash('Last name must be at least 3 character long', 'registration')
+            is_valid = False
+        if any(char.isdigit() for char in data['last_name']):
+            flash('Last name cannot contain numbers', 'registration')
             is_valid = False
         if not cls.validate_email(data):
             flash('Invalid email address!', 'registration')
@@ -120,9 +120,6 @@ class Users:
             is_valid = False
         if len(data['password']) > 16:
             flash('Password must be between 6 and 16 characters long', 'registration')
-            is_valid = False
-        if data['password'] != data['confirm_password']:
-            flash('Password does not match', 'registration')
             is_valid = False
         # password check to have 1 number and One uppercase letter
         upper = False
@@ -137,6 +134,9 @@ class Users:
             is_valid = False
         if not digit:
             flash('Password should include one number', 'registration')
+            is_valid = False
+        if data['password'] != data['confirm_password']:
+            flash('Password does not match', 'registration')
             is_valid = False
         return is_valid
 

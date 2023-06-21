@@ -8,8 +8,8 @@ def dashboard():
         flash('Please login!','user')
         return redirect('/')
     user = user_model.Users.get_one(session['id'])
-    recipes = recipe_model.Recipes.get_all_recipe_info()
-    return render_template('dashboard.html', user = user, recipes=recipes)
+    all_recipes = recipe_model.Recipes.get_all_recipe_info()
+    return render_template('dashboard.html', user = user, recipes=all_recipes)
 
 # create new recipe route
 @app.route('/recipes/new')
@@ -25,20 +25,7 @@ def create_recipe():
     if 'id' not in session:
         flash('Please login!','user')
         return redirect('/')
-    is_valid = True
-    if len(request.form['name']) < 3:
-        flash('Name must be at least 3 characters', 'recipe')
-        is_valid = False
-    if len(request.form['description']) < 3:
-        flash('Description must be at least 3 characters', 'recipe')
-        is_valid = False
-    if len(request.form['instruction']) < 3:
-        flash('Instructions must be at least 3 characters', 'recipe')
-        is_valid = False
-    if len(request.form['updated_at']) < 1:
-        flash('Please select a date', 'recipe')
-        is_valid = False
-    if not is_valid:
+    if not recipe_model.Recipes.validate_recipe(request.form):
         return redirect('/recipes/new')
     data = {
         **request.form,
@@ -53,8 +40,11 @@ def view_recipe(recipe_id):
     if 'id' not in session:
         flash('Please login!','user')
         return redirect('/')
+    # current user information
     user = user_model.Users.get_one(session['id'])
-    recipe = recipe_model.Recipes.get_recipe_info(recipe_id)
+    # recipe information
+    # recipe = recipe_model.Recipes.get_one_recipe_info(recipe_id)
+    recipe = recipe_model.Recipes.get_one_recipe_info2(recipe_id)
     return render_template('recipe_read.html', user=user,recipe=recipe)
 
 # edit recipe route
@@ -67,7 +57,6 @@ def edit_recipe_form(recipe_id):
     if not session['id'] == recipe.user_id:
         flash("Cannot edit other peoples recipes", 'dashboard')
         return redirect('/dashboard')
-    print(recipe.created_at)
     return render_template('recipe_edit.html', recipe=recipe)
 
 # edit process
@@ -76,23 +65,8 @@ def edit_recipe(recipe_id):
     if 'id' not in session:
         flash('Please login!','user')
         return redirect('/')
-    # valid edit check
-    is_valid = True
-    print(request.form)
-    if len(request.form['name']) < 3:
-        flash('Name must be at least 3 characters', 'edit')
-        is_valid = False
-    if len(request.form['description']) < 3:
-        flash('Description must be at least 3 characters', 'edit')
-        is_valid = False
-    if len(request.form['instruction']) < 3:
-        flash('Instructions must be at least 3 characters', 'edit')
-        is_valid = False
-    if len(request.form['updated_at']) < 1:
-        flash('Please select a date', 'edit')
-        is_valid = False
-    if not is_valid:
-        return redirect('/recipes/new')
+    if not recipe_model.Recipes.validate_recipe(request.form):
+        return redirect(f'/recipes/edit/{recipe_id}')
     data = {
         **request.form,
         'id': recipe_id

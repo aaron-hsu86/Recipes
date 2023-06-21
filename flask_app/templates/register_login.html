@@ -15,8 +15,8 @@
 </style>
 <body class="bg-dark text-light">
     
-    <div class="d-flex justify-content-evenly">
-        <div class="bg-dark text-light col-2 p-5 border border-danger border-5 rounded">
+    <div class="d-flex justify-content-evenly p-5">
+        <div class="bg-dark text-light p-5 border border-danger border-5 rounded">
             {% with messages = get_flashed_messages(category_filter=['registration']) %}
             {% if messages %}
             <div class="error-msg p-3">
@@ -53,7 +53,7 @@
                 </div>
             </form>
         </div>
-        <div class="bg-dark text-light col-2 p-5 border border-danger border-5 rounded">
+        <div class="bg-dark text-light p-5 border border-danger border-5 rounded">
             {% with messages = get_flashed_messages(category_filter=['login']) %}
             {% if messages %}
             <div class="error-msg p-3">
